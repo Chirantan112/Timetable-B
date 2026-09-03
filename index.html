@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="B.Tech CSE Section B daily timetable">
+  <link rel="manifest" href="manifest.json">
+  <title>Timetable B</title>
+  <style>
+    :root { color-scheme: light dark; --bg:#f5f7fb; --card:#fff; --text:#111827; --muted:#667085; --line:#e5e7eb; --accent:#2563eb; --accent-soft:#dbeafe; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg:#0b1020; --card:#151b2d; --text:#f8fafc; --muted:#a8b0c2; --line:#2b344a; --accent:#60a5fa; --accent-soft:#1e3a5f; }
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
+    main { max-width:560px; margin:auto; padding:20px 14px 28px; }
+    .top { display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:16px; }
+    h1 { font-size:24px; margin:0; letter-spacing:-.4px; }
+    .subtitle { color:var(--muted); font-size:13px; margin-top:4px; }
+    .today { background:var(--accent-soft); color:var(--text); border:1px solid var(--line); border-radius:999px; padding:7px 11px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .days { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin-bottom:16px; }
+    button { font:inherit; }
+    .day { min-height:44px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--text); font-weight:700; cursor:pointer; }
+    .day.active { background:var(--accent); color:white; border-color:var(--accent); }
+    .day.today-day:not(.active) { outline:2px solid var(--accent); outline-offset:1px; }
+    .date { font-size:12px; color:var(--muted); margin:0 2px 10px; }
+    .day.active + * {}
+    .classes { display:grid; gap:10px; }
+    .class { display:grid; grid-template-columns:78px 1fr; gap:10px; align-items:stretch; }
+    .time { padding:13px 4px; color:var(--muted); font-size:12px; font-weight:700; text-align:center; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px; }
+    .subject { font-weight:800; line-height:1.25; }
+    .code { color:var(--muted); font-size:11px; margin-top:5px; }
+    .type { display:inline-block; margin-top:8px; padding:3px 7px; border-radius:999px; background:var(--accent-soft); font-size:10px; font-weight:800; }
+    .empty { background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:26px 16px; text-align:center; color:var(--muted); }
+    .footer { margin-top:20px; text-align:center; color:var(--muted); font-size:11px; line-height:1.5; }
+    @media (max-width:360px) { main{padding-left:10px;padding-right:10px}.days{gap:4px}.day{font-size:12px}.class{grid-template-columns:70px 1fr}.time{font-size:11px} }
+  </style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1 id="title">Today's Timetable</h1>
+      <div class="subtitle">B.Tech CSE · Section B · Room C-407</div>
+    </div>
+    <div class="today" id="todayBadge">Today</div>
+  </div>
+
+  <div class="days" id="days" aria-label="Choose a day"></div>
+  <div class="date" id="dateLabel"></div>
+  <section class="classes" id="classes" aria-live="polite"></section>
+
+  <div class="footer">Based on the uploaded 3rd Semester 2026–27 timetable for Section B.</div>
+</main>
+
+<script>
+const timetable = {
+  Monday: [
+    ["09:05–09:55","Data Structures and Algorithms","CSD201B"],
+    ["11:15–12:05","Indian Constitution, Human Rights and Professional Ethics","LAN201B"],
+    ["12:55–01:45","Data Structures and Algorithms","CSD201B"],
+    ["03:20–04:10","Discrete Mathematics","CSD208B"],
+    ["04:10–05:00","Software Development Fundamental","CSD203B"]
+  ],
+  Tuesday: [
+    ["09:05–09:55","Logic Design","CSD202B"],
+    ["09:55–10:45","Probability and Statistics","MTE301B"],
+    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B"],
+    ["12:55–01:45","Discrete Mathematics","CSD208B"],
+    ["02:30–04:10","Data Structures and Algorithms Lab","CSD201B"],
+    ["04:10–05:00","Foundation Mathematics-1","—"]
+  ],
+  Wednesday: [
+    ["09:05–09:55","Logic Design","CSD202B"],
+    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B"],
+    ["03:20–04:10","Software Development Fundamental","CSD203B"],
+    ["04:10–05:00","Programming Paradigms","CSD207B"]
+  ],
+  Thursday: [
+    ["09:05–10:45","Data Structures and Algorithms Lab","CSD201B"],
+    ["11:15–12:05","Probability and Statistics","MTE301B"],
+    ["12:55–01:45","Data Structures and Algorithms","CSD201B"],
+    ["03:20–04:10","Programming Paradigms","CSD207B"],
+    ["04:10–05:00","Foundation Mathematics-1","—"]
+  ],
+  Friday: [
+    ["09:05–09:55","Programming Paradigms","CSD207B"],
+    ["09:55–10:45","Probability and Statistics","MTE301B"],
+    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B"],
+    ["12:55–01:45","Discrete Mathematics","CSD208B"],
+    ["03:20–04:10","Data Structures and Algorithms Lab","CSD201B"]
+  ],
+  Saturday: []
+};
+
+const order = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const short = {Monday:"Mon",Tuesday:"Tue",Wednesday:"Wed",Thursday:"Thu",Friday:"Fri",Saturday:"Sat"};
+const dayEl = document.getElementById("days");
+const classesEl = document.getElementById("classes");
+const titleEl = document.getElementById("title");
+const dateEl = document.getElementById("dateLabel");
+const badgeEl = document.getElementById("todayBadge");
+
+function todayName() {
+  return new Intl.DateTimeFormat("en-IN", {weekday:"long"}).format(new Date());
+}
+function formatDate() {
+  return new Intl.DateTimeFormat("en-IN", {day:"numeric", month:"short", year:"numeric"}).format(new Date());
+}
+function render(selected) {
+  const today = todayName();
+  titleEl.textContent = selected === today ? "Today's Timetable" : selected + " Timetable";
+  badgeEl.textContent = selected === today ? "TODAY" : "VIEWING";
+  dateEl.textContent = selected === today ? formatDate() : "Tap a day above to switch";
+  dayEl.querySelectorAll("button").forEach(b => {
+    b.classList.toggle("active", b.dataset.day === selected);
+  });
+  classesEl.innerHTML = "";
+  const list = timetable[selected] || [];
+  if (!list.length) {
+    classesEl.innerHTML = '<div class="empty"><strong>No classes scheduled</strong><br><span>Enjoy your day! 🎉</span></div>';
+    return;
+  }
+  list.forEach(([time, subject, code]) => {
+    const item = document.createElement("article");
+    item.className = "class";
+    const type = subject.includes("Lab") ? "LAB" : "CLASS";
+    item.innerHTML = `<div class="time">${time}</div><div class="card"><div class="subject">${subject}</div><div class="code">${code}</div><span class="type">${type}</span></div>`;
+    classesEl.appendChild(item);
+  });
+}
+
+order.forEach(day => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "day";
+  b.dataset.day = day;
+  b.textContent = short[day];
+  if (day === todayName()) b.classList.add("today-day");
+  b.addEventListener("click", () => render(day));
+  dayEl.appendChild(b);
+});
+
+render(order.includes(todayName()) ? todayName() : "Monday");
+</script>
+
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+</script>
+
+</body>
+</html>
