@@ -9,9 +9,7 @@
   <title>Timetable B</title>
   <style>
     :root { color-scheme: light dark; --bg:#f5f7fb; --card:#fff; --text:#111827; --muted:#667085; --line:#e5e7eb; --accent:#2563eb; --accent-soft:#dbeafe; }
-    @media (prefers-color-scheme: dark) {
-      :root { --bg:#0b1020; --card:#151b2d; --text:#f8fafc; --muted:#a8b0c2; --line:#2b344a; --accent:#60a5fa; --accent-soft:#1e3a5f; }
-    }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0b1020; --card:#151b2d; --text:#f8fafc; --muted:#a8b0c2; --line:#2b344a; --accent:#60a5fa; --accent-soft:#1e3a5f; } }
     * { box-sizing:border-box; }
     body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
     main { max-width:560px; margin:auto; padding:20px 14px 28px; }
@@ -25,7 +23,6 @@
     .day.active { background:var(--accent); color:white; border-color:var(--accent); }
     .day.today-day:not(.active) { outline:2px solid var(--accent); outline-offset:1px; }
     .date { font-size:12px; color:var(--muted); margin:0 2px 10px; }
-    .day.active + * {}
     .classes { display:grid; gap:10px; }
     .class { display:grid; grid-template-columns:78px 1fr; gap:10px; align-items:stretch; }
     .time { padding:13px 4px; color:var(--muted); font-size:12px; font-weight:700; text-align:center; }
@@ -43,114 +40,80 @@
   <div class="top">
     <div>
       <h1 id="title">Today's Timetable</h1>
-      <div class="subtitle">B.Tech CSE · Section B · Room C-407</div>
+      <div class="subtitle">B.Tech CSE · Section B</div>
     </div>
     <div class="today" id="todayBadge">Today</div>
   </div>
-
   <div class="days" id="days" aria-label="Choose a day"></div>
   <div class="date" id="dateLabel"></div>
   <section class="classes" id="classes" aria-live="polite"></section>
-
   <div class="footer">Based on the uploaded 3rd Semester 2026–27 timetable for Section B.</div>
 </main>
-
 <script>
 const timetable = {
   Monday: [
-    ["09:05–09:55","Data Structures and Algorithms","CSD201B"],
-    ["11:15–12:05","Indian Constitution, Human Rights and Professional Ethics","LAN201B"],
-    ["12:55–01:45","Data Structures and Algorithms","CSD201B"],
-    ["03:20–04:10","Discrete Mathematics","CSD208B"],
-    ["04:10–05:00","Software Development Fundamental","CSD203B"]
+    ["09:05–09:55","Data Structures and Algorithms","CSD201B","Room C-407"],
+    ["11:15–12:05","Indian Constitution, Human Rights and Professional Ethics","LAN201B","CSE B / Faculty B"],
+    ["12:55–01:45","Data Structures and Algorithms","CSD201B","Room C-407"],
+    ["03:20–04:10","Discrete Mathematics","CSD208B","Room C-407"],
+    ["04:10–05:00","Software Development Fundamental","CSD203B","Room C-407"]
   ],
   Tuesday: [
-    ["09:05–09:55","Logic Design","CSD202B"],
-    ["09:55–10:45","Probability and Statistics","MTE301B"],
-    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B"],
-    ["12:55–01:45","Discrete Mathematics","CSD208B"],
-    ["02:30–04:10","Data Structures and Algorithms Lab","CSD201B"],
-    ["04:10–05:00","Foundation Mathematics-1","—"]
+    ["09:05–09:55","Logic Design","CSD202B","Room C-407"],
+    ["09:55–10:45","Probability and Statistics","MTE301B","Room C-407"],
+    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B","B3-A103A / B1-A103C / B2-A103E"],
+    ["12:55–01:45","Discrete Mathematics","CSD208B","Room C-407"],
+    ["03:20–04:10","Data Structures and Algorithms Lab","CSD201B","B3-A103D"],
+    ["04:10–05:00","Foundation Mathematics-1","—","Room C-407"]
   ],
   Wednesday: [
-    ["09:05–09:55","Logic Design","CSD202B"],
-    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B"],
-    ["03:20–04:10","Software Development Fundamental","CSD203B"],
-    ["04:10–05:00","Programming Paradigms","CSD207B"]
+    ["09:05–09:55","Logic Design","CSD202B","Room C-407"],
+    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B","B3-A103A / B1-A103C / B2-A103E"],
+    ["03:20–04:10","Software Development Fundamental","CSD203B","Room C-407"],
+    ["04:10–05:00","Programming Paradigms","CSD207B","Room C-407"]
   ],
   Thursday: [
-    ["09:05–10:45","Data Structures and Algorithms Lab","CSD201B"],
-    ["11:15–12:05","Probability and Statistics","MTE301B"],
-    ["12:55–01:45","Data Structures and Algorithms","CSD201B"],
-    ["03:20–04:10","Programming Paradigms","CSD207B"],
-    ["04:10–05:00","Foundation Mathematics-1","—"]
+    ["09:05–09:55","Data Structures and Algorithms Lab","CSD201B","B2-A103D"],
+    ["11:15–12:05","Probability and Statistics","MTE301B","Room C-407"],
+    ["12:55–01:45","Data Structures and Algorithms","CSD201B","Room C-407"],
+    ["03:20–04:10","Programming Paradigms","CSD207B","Room C-407"],
+    ["04:10–05:00","Foundation Mathematics-1","—","Room C-407"]
   ],
   Friday: [
-    ["09:05–09:55","Programming Paradigms","CSD207B"],
-    ["09:55–10:45","Probability and Statistics","MTE301B"],
-    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B"],
-    ["12:55–01:45","Discrete Mathematics","CSD208B"],
-    ["03:20–04:10","Data Structures and Algorithms Lab","CSD201B"]
+    ["09:05–09:55","Programming Paradigms","CSD207B","Room C-407"],
+    ["09:55–10:45","Probability and Statistics","MTE301B","Room C-407"],
+    ["11:15–12:55","Logic Design Lab / Programming Paradigms Lab / Software Development Fundamentals Lab","CSD202B / CSD207B / CSC203B","B3-A103A / B1-A103C / B2-A103E"],
+    ["12:55–01:45","Discrete Mathematics","CSD208B","Room C-407"],
+    ["03:20–04:10","Data Structures and Algorithms Lab","CSD201B","B1-A103G"]
   ],
   Saturday: []
 };
-
 const order = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const short = {Monday:"Mon",Tuesday:"Tue",Wednesday:"Wed",Thursday:"Thu",Friday:"Fri",Saturday:"Sat"};
-const dayEl = document.getElementById("days");
-const classesEl = document.getElementById("classes");
-const titleEl = document.getElementById("title");
-const dateEl = document.getElementById("dateLabel");
-const badgeEl = document.getElementById("todayBadge");
-
-function todayName() {
-  return new Intl.DateTimeFormat("en-IN", {weekday:"long"}).format(new Date());
-}
-function formatDate() {
-  return new Intl.DateTimeFormat("en-IN", {day:"numeric", month:"short", year:"numeric"}).format(new Date());
-}
+const dayEl = document.getElementById("days"), classesEl = document.getElementById("classes"), titleEl = document.getElementById("title"), dateEl = document.getElementById("dateLabel"), badgeEl = document.getElementById("todayBadge");
+function todayName() { return new Intl.DateTimeFormat("en-IN", {weekday:"long"}).format(new Date()); }
+function formatDate() { return new Intl.DateTimeFormat("en-IN", {day:"numeric", month:"short", year:"numeric"}).format(new Date()); }
 function render(selected) {
   const today = todayName();
   titleEl.textContent = selected === today ? "Today's Timetable" : selected + " Timetable";
   badgeEl.textContent = selected === today ? "TODAY" : "VIEWING";
   dateEl.textContent = selected === today ? formatDate() : "Tap a day above to switch";
-  dayEl.querySelectorAll("button").forEach(b => {
-    b.classList.toggle("active", b.dataset.day === selected);
-  });
+  dayEl.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.day === selected));
   classesEl.innerHTML = "";
   const list = timetable[selected] || [];
-  if (!list.length) {
-    classesEl.innerHTML = '<div class="empty"><strong>No classes scheduled</strong><br><span>Enjoy your day! 🎉</span></div>';
-    return;
-  }
-  list.forEach(([time, subject, code]) => {
-    const item = document.createElement("article");
-    item.className = "class";
+  if (!list.length) { classesEl.innerHTML = '<div class="empty"><strong>No classes scheduled</strong><br><span>Enjoy your day! 🎉</span></div>'; return; }
+  list.forEach(([time, subject, code, room]) => {
+    const item = document.createElement("article"); item.className = "class";
     const type = subject.includes("Lab") ? "LAB" : "CLASS";
-    item.innerHTML = `<div class="time">${time}</div><div class="card"><div class="subject">${subject}</div><div class="code">${code}</div><span class="type">${type}</span></div>`;
+    item.innerHTML = `<div class="time">${time}</div><div class="card"><div class="subject">${subject}</div><div class="code">${code}</div><div class="code">📍 ${room}</div><span class="type">${type}</span></div>`;
     classesEl.appendChild(item);
   });
 }
-
-order.forEach(day => {
-  const b = document.createElement("button");
-  b.type = "button";
-  b.className = "day";
-  b.dataset.day = day;
-  b.textContent = short[day];
-  if (day === todayName()) b.classList.add("today-day");
-  b.addEventListener("click", () => render(day));
-  dayEl.appendChild(b);
-});
-
+order.forEach(day => { const b = document.createElement("button"); b.type="button"; b.className="day"; b.dataset.day=day; b.textContent=short[day]; if(day===todayName()) b.classList.add("today-day"); b.addEventListener("click",()=>render(day)); dayEl.appendChild(b); });
 render(order.includes(todayName()) ? todayName() : "Monday");
 </script>
-
 <script>
-if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
-}
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("./sw.js").catch(() => {});
 </script>
-
 </body>
 </html>
