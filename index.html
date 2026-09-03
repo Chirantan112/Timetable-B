@@ -50,6 +50,7 @@
     .subject { font-weight:800; line-height:1.25; padding-right:76px; }
     .code { color:var(--muted); font-size:11px; margin-top:5px; }
     .type { display:inline-block; margin-top:8px; padding:3px 7px; border-radius:999px; background:var(--accent-soft); font-size:10px; font-weight:800; }
+    .contact-hour { display:inline-block; margin-top:8px; margin-left:5px; padding:3px 7px; border-radius:999px; background:var(--next-soft); color:var(--next); font-size:10px; font-weight:900; }
     .live-pill, .next-pill { position:absolute; top:11px; right:11px; display:inline-flex; align-items:center; gap:5px; padding:4px 7px; border-radius:999px; font-size:9px; font-weight:900; letter-spacing:.3px; }
     .live-pill { background:var(--live-soft); color:var(--live); }
     .next-pill { background:var(--next-soft); color:var(--next); }
@@ -126,6 +127,15 @@ const breaks = [
   ["10:45","11:15","Tea Break"],
   ["13:45","14:30","Lunch Break"]
 ];
+// Contact Hour cells marked explicitly in the source timetable. Faculty names are intentionally omitted.
+const contactHours = {
+  Monday: new Set([2, 4]),
+  Tuesday: new Set([0]),
+  Wednesday: new Set([3]),
+  Thursday: new Set(),
+  Friday: new Set(),
+  Saturday: new Set()
+};
 const dayEl = document.getElementById("days"), classesEl = document.getElementById("classes"), titleEl = document.getElementById("title"), dateEl = document.getElementById("dateLabel"), badgeEl = document.getElementById("todayBadge"), statusEl = document.getElementById("status"), statusLabelEl = document.getElementById("statusLabel"), statusTitleEl = document.getElementById("statusTitle"), countdownEl = document.getElementById("countdown"), todayJumpEl = document.getElementById("todayJump");
 let selectedDay;
 function todayName() { return new Intl.DateTimeFormat("en-IN", {weekday:"long"}).format(new Date()); }
@@ -215,7 +225,8 @@ function render(selected, autoScroll = false) {
     const done = viewingToday && !live && parseRange(time)[1] <= currentMinutes();
     item.className = `class${live ? " live" : ""}${done ? " done" : ""}`;
     const type = subject.includes("Lab") ? "LAB" : "CLASS";
-    item.innerHTML = `<div class="time">${time}</div><div class="card${live ? " live" : ""}${next ? " next" : ""}"><div class="subject">${subject}</div><div class="code">${code}</div><div class="code">📍 ${room}</div><span class="type">${type}</span>${live ? '<span class="live-pill"><span class="live-dot"></span>LIVE NOW</span>' : next ? '<span class="next-pill">NEXT</span>' : ""}</div>`;
+    const contact = contactHours[selected]?.has(index) ? '<span class="contact-hour">CONTACT HOUR</span>' : "";
+    item.innerHTML = `<div class="time">${time}</div><div class="card${live ? " live" : ""}${next ? " next" : ""}"><div class="subject">${subject}</div><div class="code">${code}</div><div class="code">📍 ${room}</div><span class="type">${type}</span>${contact}${live ? '<span class="live-pill"><span class="live-dot"></span>LIVE NOW</span>' : next ? '<span class="next-pill">NEXT</span>' : ""}</div>`;
     classesEl.appendChild(item);
     const end = parseRange(time)[1];
     const followingBreak = breaks.find(([start]) => toMinutes(start) === end);
